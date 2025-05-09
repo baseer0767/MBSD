@@ -5,6 +5,7 @@ const cors = require('cors');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
+const moment = require('moment-timezone'); 
 
 // Initialize Express
 const app = express();
@@ -50,8 +51,8 @@ app.post('/addReading', async (req, res) => {
     const newReading = {
       temperature: parseFloat(temperature),
       humidity: parseFloat(humidity),
-      timestamp: new Date()  // Store UTC time
-    };
+      timestamp: moment().tz("Asia/Karachi").toDate()  // Converts to Pakistan time
+   };
 
     await collection.insertOne(newReading);
     res.status(200).send("Reading stored successfully");
