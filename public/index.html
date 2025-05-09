@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>DHT11 Sensor Dashboard</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <!-- Dashboard Page -->
+  <div class="dashboard">
+    <h1>🌤️ Weather Monitor <span>🌡️</span></h1>
+    <p class="subtitle">Real-time temperature and humidity monitoring dashboard powered by <strong>ESP32</strong></p>
+
+    <!-- Upload Button (Top Right Corner) -->
+    <button class="upload-btn" onclick="showUploadPage()">Upload Firmware</button>
+
+    <!-- Weather Cards -->
+    <div class="cards">
+      <div class="card">
+        <div class="card-icon">🌡️</div>
+        <h2>Temperature</h2>
+        <p id="temp-value">--</p>
+        <span>°C</span>
+      </div>
+      <div class="card">
+        <div class="card-icon">💧</div>
+        <h2>Humidity</h2>
+        <p id="humidity-value">--</p>
+        <span>%</span>
+      </div>
+    </div>
+
+    <!-- Historical Data -->
+    <div class="historical-card">
+      <div class="card-header">
+        <h2>📈 Historical Data</h2>
+        <div class="toggle-buttons">
+            <button onclick="showChart('temperature')" data-type="temperature">Temperature</button>
+            <button onclick="showChart('humidity')" data-type="humidity">Humidity</button>            
+        </div>
+      </div>
+      <canvas id="historyChart"></canvas>
+    </div>
+  </div>
+
+  <!-- Upload Firmware Page (Hidden by Default) -->
+  <div id="upload-page" class="upload-page" style="display:none;">
+    <h1>Upload Firmware</h1>
+    <div class="upload-form">
+      <h2>Choose your firmware file</h2>
+      <form id="upload-firmware-form">
+        <input type="file" id="firmware-file" accept=".bin" required />
+        <button type="submit">Upload Firmware</button>
+      </form>
+      <div class="status-message" id="status-message"></div>
+      <!-- Inside #upload-page -->
+      <button class="back-btn" onclick="hideUploadPage()">← Back to Dashboard</button>
+    </div>
+  </div>
+
+  <script>
+    let chartInstance;
+    let currentChartType = 'temperature';
+
+    // Fetch and display the latest temperature and humidity values
+    async function fetchLatestReading() {
+      try {
+        const res = await fetch('/readings');
+        const data = await res.json();
+
+        if (data.length > 0) {
+          const latest = data[data.length - 1];
+          document.getElementById('temp-value').textContent = latest.temperature;
+          document.getElementById('humidity-value').textContent = latest.humidity;
+        }
+      } catch (error) {
+        console.error("Error fetching latest reading:", error);
+      }
+    }
+
+    // Fetch historical data (last 100 readings)
+    async function fetchHistoricalData() {
+      try {
+        const res = await fetch('/readings');
+        const data = await res.json();
+        return data.slice(-100);
+      } catch (error) {
+        console.error("Error fetching historical data:", error);
+        return [];
+      }
+    }
+
+    // Render the historical chart based on type ('temperature' or 'humidity')
+    async function showChart(type) {
+      const data = await fetchHistoricalData();
+      const labels = data.map(entry => new Date(entry.timestamp).toLocaleTimeString());
+      const values = data.map(entry => entry[type]);
+
+      const ctx = document.getElementById('historyChart').getContext('2d');
+
+      if (chartInstance) {
+        chartInstance.destroy();
+      }
+
+      chartInstance = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels,
+          datasets: [{
+            label: type === 'temperature' ? 'Temperature (°C)' : 'Humidity (%)',
+            data: values,
+            fill: false,
+            borderColor: type === 'temperature' ? 'rgba(255, 99, 132, 1)' : 'rgba(54, 162, 235, 1)',
+            tension: 0.2,
+            pointRadius: 2,
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: {
+              display: true
+            }
+          },
+          scales: {
+            x: {
+              display: true,
+              title: { display: true, text: 'Time' }
+            },
+            y: {
+              display: true,
+              title: { display: true, text: type === 'temperature' ? '°C' : '%' }
+            }
+          }
+        }
+      });
+    }
+
+    // Initial load
+    fetchLatestReading();
+    showChart(currentChartType);
+
+    // Refresh every 15 seconds
+    setInterval(() => {
+      fetchLatestReading();
+      showChart(currentChartType);
+    }, 15000);
+
+    // Button toggle logic (if using toggle buttons in HTML)
+    document.querySelectorAll('.toggle-buttons button').forEach(button => {
+      button.addEventListener('click', () => {
+        currentChartType = button.dataset.type;
+        showChart(currentChartType);
+      });
+    });
+
+    // Show Upload Page
+    function showUploadPage() {
+      document.querySelector('.dashboard').style.display = 'none';
+      document.getElementById('upload-page').style.display = 'block';
+    }
+
+    // Hide Upload Page
+    function hideUploadPage() {
+      document.getElementById('upload-page').style.display = 'none';
+      document.querySelector('.dashboard').style.display = 'block';
+    }
+
+    // Handle Firmware Upload
+    document.getElementById('upload-firmware-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const fileInput = document.getElementById('firmware-file');
+      const file = fileInput.files[0];
+
+      if (!file) {
+        document.getElementById('status-message').textContent = "Please select a firmware file.";
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append("firmware", file); // field name must match multer config
+
+      try {
+        const res = await fetch('/api/upload', {
+          method: 'POST',
+          body: formData
+        });
+
+        const result = await res.json();
+        document.getElementById('status-message').textContent = result.message;
+      } catch (err) {
+        console.error("Upload error:", err);
+        document.getElementById('status-message').textContent = "Error uploading firmware.";
+      }
+    });
+  </script>
+</body>
+</html>

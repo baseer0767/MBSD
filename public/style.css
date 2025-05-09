@@ -1,0 +1,249 @@
+body {
+    background-color: #001f3f;
+    color: #ffffff;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 0;
+  }
+  
+  .dashboard {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 40px 20px;
+    text-align: center;
+  }
+  
+  h1 {
+    font-size: 3em;
+    margin-bottom: 0.2em;
+    color: #ffffff;
+  }
+  
+  .subtitle {
+    font-size: 1.2em;
+    margin-bottom: 2em;
+    color: #dddddd;
+  }
+  
+  .cards {
+    display: flex;
+    flex-direction: row;
+    gap: 30px;
+    align-items: center;
+  }
+  
+  .card {
+    position: relative;
+    background-color: #003366;
+    padding: 20px;
+    border-radius: 15px;
+    width: 90%;
+    max-width: 900px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.4);
+    text-align: left;
+    transition: transform 0.3s ease;
+  }
+  
+  .card:hover {
+    transform: translateY(-10px);
+  }
+  
+  .card h2 {
+    margin-bottom: 15px;
+    color: #00e0ff;
+    position: relative;
+  }
+  
+  .card p {
+    font-size: 3.5em;
+    margin: 0;
+  }
+  
+  .card span {
+    font-size: 1.4em;
+    color: #cccccc;
+  }
+  
+  .card-icon {
+    position: absolute;
+    top: 20px;
+    right: 30px;
+    font-size: 2em;
+    padding: 20px;
+  }
+  
+  .historical-card {
+    background-color: #002b5c;
+    margin-top: 40px;
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.4);
+    width: 97%;
+    max-width: 1200px; /* Match .dashboard width */
+    margin-left: auto;
+    margin-right: auto;
+    position: relative;
+  }
+  
+  .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .toggle-buttons button {
+    background-color: #005f99;
+    border: none;
+    color: white;
+    padding: 8px 12px;
+    margin-left: 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background 0.3s ease;
+  }
+  
+  .toggle-buttons button:hover {
+    background-color: #007acc;
+  }
+  
+  canvas {
+    margin-top: 20px;
+    width: 100% !important;
+    height: 300px !important;
+  }
+  
+ /* Upload Firmware Page Card Styling */
+.upload-page {
+  display: none;
+  text-align: center;
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 30px 20px;
+  background-color: #003366; /* Match the color of the cards */
+  border-radius: 15px;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.4);
+
+  /* Center the card vertically and horizontally */
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1000; /* Ensure it appears above other elements */
+}
+
+.upload-page h1 {
+  margin-top: 20px;
+  font-size: 24px;
+  color: #00e0ff; /* Light blue color for title */
+}
+
+.upload-page h2 {
+  margin-bottom: 20px;
+  font-size: 18px;
+  color: #cccccc; /* Lighter color for subtitle */
+}
+
+.upload-form {
+  margin-top: 20px;
+}
+
+.upload-form input[type="file"] {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 20px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background-color: #002b5c; /* Darker background to match the design */
+  color: white;
+}
+
+.upload-form button {
+  width: 100%;
+  padding: 12px;
+  background-color: #00e0ff; /* Green button similar to previous */
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.upload-form button:hover {
+  background-color: #00c1d1; /* Darker shade for hover effect */
+}
+
+.status-message {
+  text-align: center;
+  margin-top: 20px;
+  color: #00e0ff;
+  font-size: 16px;
+}
+
+/* Upload Button Styling */
+.upload-btn {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background-color: #00e0ff; /* Consistent with the rest of the dashboard */
+  color: white;
+  padding: 12px 20px;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: background-color 0.3s ease;
+  z-index: 1000;
+}
+
+.upload-btn:hover {
+  background-color: #00c1d1; /* Darker shade for hover effect */
+}
+
+.upload-form input[type="file"] {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 20px;
+  border: none;
+  border-radius: 8px;
+  background-color: #002b5c; /* Consistent with card design */
+  color: white;
+  font-size: 14px;
+  cursor: pointer;
+  box-sizing: border-box;
+}
+
+.upload-form input[type="file"]::file-selector-button {
+  background-color: #00e0ff;
+  color: white;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  cursor: pointer;
+  margin-right: 10px;
+  transition: background-color 0.3s ease;
+}
+
+.upload-form input[type="file"]::file-selector-button:hover {
+  background-color: #00c1d1;
+}
+
+.back-btn {
+  margin-top: 20px;
+  background-color: transparent;
+  color: #00e0ff;
+  border: 2px solid #00e0ff;
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.back-btn:hover {
+  background-color: #00c1d1;
+  color: white;
+  border-color: #00c1d1;
+}
