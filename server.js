@@ -50,7 +50,7 @@ app.post('/addReading', async (req, res) => {
     const newReading = {
       temperature: parseFloat(temperature),
       humidity: parseFloat(humidity),
-      timestamp: new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Karachi" }))
+      timestamp: new Date()  // Store UTC time
     };
 
     await collection.insertOne(newReading);
@@ -72,7 +72,7 @@ app.get('/readings', async (req, res) => {
     const collection = db.collection("dht_readings");
 
     const latestReadings = await collection.find().sort({ timestamp: -1 }).limit(100).toArray();
-    res.json(latestReadings.reverse()); // reverse to get oldest first
+    res.json(latestReadings.reverse()); // oldest to newest
   } catch (err) {
     console.error(err);
     res.status(500).send("Error fetching data from MongoDB");
@@ -90,7 +90,7 @@ app.post('/api/upload', upload.single('firmware'), (req, res) => {
   res.status(200).json({ success: true, message: "Firmware uploaded successfully!" });
 });
 
-// New: Endpoint to serve the firmware to ESP32
+// Endpoint to serve the firmware to ESP32
 app.get('/firmware', (req, res) => {
   const filePath = path.join(__dirname, 'tmp', 'firmware.bin');
   if (fs.existsSync(filePath)) {
